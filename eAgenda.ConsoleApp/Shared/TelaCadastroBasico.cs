@@ -1,26 +1,18 @@
-﻿using eAgenda.ConsoleApp.ContatoModule;
-using eAgenda.Controladores;
-using eAgenda.Dominio;
+﻿using eAgenda.Controladores.Shared;
+using eAgenda.Dominio.Shared;
 using System;
 using System.Collections.Generic;
 
-namespace eAgenda.ConsoleApp
+namespace eAgenda.ConsoleApp.Shared
 {
     public abstract class TelaCadastroBasico<T> : TelaBase, ICadastravel
         where T : EntidadeBase
     {
         protected Controlador<T> controlador;
-        private TelaContato telaContato;
 
         public TelaCadastroBasico(string titulo, Controlador<T> controlador)
             : base(titulo)
         {
-            this.controlador = controlador;
-        }
-
-        public TelaCadastroBasico(string tit, TelaContato telaContato, Controlador<T> controlador) : base(tit)
-        {
-            this.telaContato = telaContato;
             this.controlador = controlador;
         }
 
@@ -190,5 +182,5 @@ namespace eAgenda.ConsoleApp
 
         public abstract T ObterRegistro(TipoAcao tipoAcao);
 
-    }   
+    }
 }

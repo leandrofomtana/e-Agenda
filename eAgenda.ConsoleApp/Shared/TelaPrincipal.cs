@@ -1,10 +1,12 @@
 ﻿using eAgenda.ConsoleApp.CompromissoModule;
 using eAgenda.ConsoleApp.ContatoModule;
 using eAgenda.ConsoleApp.TarefaModule;
-using eAgenda.Controladores;
+using eAgenda.Controladores.CompromissoModule;
+using eAgenda.Controladores.ContatoModule;
+using eAgenda.Controladores.TarefaModule;
 using System;
 
-namespace eAgenda.ConsoleApp
+namespace eAgenda.ConsoleApp.Shared
 {
     public class TelaPrincipal : TelaBase
     {
@@ -17,21 +19,23 @@ namespace eAgenda.ConsoleApp
         private readonly ControladorCompromisso controladorCompromisso;
         private readonly TelaCompromisso telaCompromisso;
 
-
         public TelaPrincipal() : base("Tela Principal")
         {
             controladorTarefa = new ControladorTarefa();
             telaTarefa = new TelaTarefa(controladorTarefa);
+
             controladorContato = new ControladorContato();
             telaContato = new TelaContato(controladorContato);
+
             controladorCompromisso = new ControladorCompromisso();
-            telaCompromisso = new TelaCompromisso(telaContato, controladorCompromisso);
+            telaCompromisso = new TelaCompromisso(controladorCompromisso, telaContato, controladorContato);
+
             PopularAplicacao();
         }
 
         private void PopularAplicacao()
         {
-            
+
         }
 
         public TelaBase ObterTela()
@@ -52,15 +56,13 @@ namespace eAgenda.ConsoleApp
                 opcao = Console.ReadLine();
 
                 if (opcao == "1")
-                { telaSelecionada = telaTarefa; }
+                    telaSelecionada = telaTarefa;
 
                 if (opcao == "2")
-                { telaSelecionada = telaContato;  }
-
+                    telaSelecionada = telaContato;
 
                 if (opcao == "3")
-                { telaSelecionada = telaCompromisso; }
-
+                    telaSelecionada = telaCompromisso;
 
                 else if (opcao.Equals("s", StringComparison.OrdinalIgnoreCase))
                     telaSelecionada = null;
@@ -72,7 +74,7 @@ namespace eAgenda.ConsoleApp
 
         private bool OpcaoInvalida(string opcao)
         {
-            if (opcao != "1" && opcao != "2" && opcao != "3"/* && opcao != "4" && opcao != "S"*/ && opcao != "s")
+            if (opcao != "1" && opcao != "2" && opcao != "3" /*&& opcao != "4" && opcao != "S"*/ && opcao != "s")
             {
                 ApresentarMensagem("Opção inválida", TipoMensagem.Erro);
                 return true;

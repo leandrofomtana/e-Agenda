@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAgenda.Controladores", "eAgenda.Controladores\eAgenda.Controladores.csproj", "{4017E73E-8FEB-4DE8-8C3C-66178B41A902}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{309CE5CD-B2E3-4194-AD2A-C1F2A8F2AF04}"
+	ProjectSection(SolutionItems) = preProject
+		eAgenda.ConsoleApp\DBeAgenda.db = eAgenda.ConsoleApp\DBeAgenda.db
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAgenda.Tests", "eAgenda.Tests\eAgenda.Tests.csproj", "{253FEBBF-95A4-48E2-B674-EDAD74125571}"
 EndProject
