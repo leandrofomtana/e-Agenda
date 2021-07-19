@@ -93,16 +93,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormCompromisso.cs">
+    <Compile Include="TelaCompromisso\FormCompromisso.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormCompromisso.Designer.cs">
+    <Compile Include="TelaCompromisso\FormCompromisso.Designer.cs">
       <DependentUpon>FormCompromisso.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormContato.cs">
+    <Compile Include="TelaContato\FormContato.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormContato.Designer.cs">
+    <Compile Include="TelaContato\FormContato.Designer.cs">
       <DependentUpon>FormContato.cs</DependentUpon>
     </Compile>
     <Compile Include="FormInicio.cs">
@@ -111,18 +111,18 @@
     <Compile Include="FormInicio.Designer.cs">
       <DependentUpon>FormInicio.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormTarefa.cs">
+    <Compile Include="TelaTarefa\FormTarefa.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormTarefa.Designer.cs">
+    <Compile Include="TelaTarefa\FormTarefa.Designer.cs">
       <DependentUpon>FormTarefa.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormCompromisso.resx">
+    <EmbeddedResource Include="TelaCompromisso\FormCompromisso.resx">
       <DependentUpon>FormCompromisso.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormContato.resx">
+    <EmbeddedResource Include="TelaContato\FormContato.resx">
       <DependentUpon>FormContato.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormInicio.aa-DJ.resx">
@@ -131,7 +131,7 @@
     <EmbeddedResource Include="FormInicio.resx">
       <DependentUpon>FormInicio.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormTarefa.resx">
+    <EmbeddedResource Include="TelaTarefa\FormTarefa.resx">
       <DependentUpon>FormTarefa.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
