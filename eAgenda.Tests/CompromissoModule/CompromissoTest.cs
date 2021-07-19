@@ -1,4 +1,5 @@
 ﻿using eAgenda.Dominio.CompromissoModule;
+using eAgenda.Dominio.ContatoModule;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -6,69 +7,48 @@ using System;
 namespace eAgenda.Tests.CompromissoModule
 {
     [TestClass]
+    [TestCategory("Dominio")]
     public class CompromissoTest
     {
         [TestMethod]
-        public void DeveValidar_Campos()
+        public void DeveRetornar_CompromissoValido()
         {
-            Compromisso compromisso = new Compromisso("limpar a casa", "casa", null,
-                new DateTime(2021, 07, 01), new TimeSpan(0, 15, 30), new TimeSpan(0, 19, 30), null);
+            //arrange
+            var contato = new Contato("José Pedro", "jose.pedro@gmail.com", "321654987", "JP Ltda", "Dev");
 
-            var resultadoValidacao = compromisso.Validar();
+            Compromisso compromisso = new Compromisso("Montar plano de Marketing","Padaria","",
+                DateTime.Today, new TimeSpan(13,00,00), new TimeSpan(14, 00, 00), contato);
 
-            resultadoValidacao.Should().Be("ESTA_VALIDO");
+            //action
+            var resultado = compromisso.Validar();
 
+            //assert
+            resultado.Should().Be("ESTA_VALIDO");
         }
 
         [TestMethod]
-        public void DeveValidar_Assunto()
+        public void DeveValidar_Data_HoraInicio_HoraTermino()
         {
-            Compromisso compromisso = new Compromisso(null, "a", null,
-                new DateTime(2021, 07, 01), new TimeSpan(0, 15, 30), new TimeSpan(0, 19, 30), null);
+            //arrange
+            Compromisso compromisso = new Compromisso("Montar plano de Marketing", "Padaria", "",
+                 DateTime.MinValue, TimeSpan.MinValue, TimeSpan.MinValue, null);
 
-            var resultadoValidacao = compromisso.Validar();
+            //action
+            var resultado = compromisso.Validar();
 
-            resultadoValidacao.Should().Be("O campo Assunto é obrigatório");
+            //assert
+            var resultadoEsperado =
+               "O campo Data é obrigatório"
+               + Environment.NewLine
+               + "O campo Hora Início é obrigatório"
+               + Environment.NewLine
+               + "O campo Hora Término é obrigatório";
 
+            resultado.Should().Be(resultadoEsperado);
         }
 
-        [TestMethod]
-        public void DeveValidar_Data()
-        {
+        
 
-            Compromisso compromisso = new Compromisso("Valida", "Data", null,
-                DateTime.MinValue, new TimeSpan(0, 15, 30), new TimeSpan(0, 19, 30), null);
-
-            var resultadoValidacao = compromisso.Validar();
-
-            resultadoValidacao.Should().Be("O campo Data é obrigatório");
-
-        }
-
-        [TestMethod]
-        public void DeveValidar_HoraInicio()
-        {
-
-            Compromisso compromisso = new Compromisso("Valida", "Horainicio", null,
-               new DateTime(2021, 07, 01), TimeSpan.MinValue, new TimeSpan(0, 19, 30), null);
-
-            var resultadoValidacao = compromisso.Validar();
-
-            resultadoValidacao.Should().Be("O campo Hora Início é obrigatório");
-
-        }
-
-        [TestMethod]
-        public void DeveValidar_HoraFim()
-        {
-
-            Compromisso compromisso = new Compromisso("Valida", "Horafim", null,
-               new DateTime(2021, 07, 01), new TimeSpan(0, 15, 30), TimeSpan.MinValue, null);
-
-            var resultadoValidacao = compromisso.Validar();
-
-            resultadoValidacao.Should().Be("O campo Hora Término é obrigatório");
-
-        }
+       
     }
 }

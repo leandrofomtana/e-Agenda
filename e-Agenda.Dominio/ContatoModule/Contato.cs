@@ -55,6 +55,10 @@ namespace eAgenda.Dominio.ContatoModule
                 && Empresa == other.Empresa;
         }
 
+        public override string ToString()
+        {
+            return Id + " " + Nome;
+        }
         public override int GetHashCode()
         {
             int hashCode = 1695060689;

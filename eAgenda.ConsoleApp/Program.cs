@@ -9,7 +9,6 @@ namespace eAgenda.ConsoleApp
 
         static void Main(string[] args)
         {
-
             while (true)
             {
                 TelaBase telaSelecionada = telaPrincipal.ObterTela();

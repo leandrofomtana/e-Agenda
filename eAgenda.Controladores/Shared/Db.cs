@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Configuration;
+using System.Data.SQLite;
 using System.Data.Common;
 
 namespace eAgenda.Controladores.Shared
@@ -10,47 +12,63 @@ namespace eAgenda.Controladores.Shared
 
     public static class Db
     {
-        private static readonly string banco = "";
+        private static readonly string bancoDeDados;
         private static readonly string connectionString = "";
-        private static readonly DbProviderFactory factory;
-
+        private static readonly string nomeProvider;
+        private static readonly DbProviderFactory fabricaProvedor;
+        private static string roromia;
         static Db()
-        {
-            banco = ConfigurationManager.AppSettings["bancoparausar"].ToLower().Trim();
-            connectionString = ConfigurationManager.ConnectionStrings[banco].ConnectionString;
-            string providerName = ConfigurationManager.ConnectionStrings[banco].ProviderName;
-            factory = DbProviderFactories.GetFactory(providerName);
-  
+        {            
+            
+            bancoDeDados = ConfigurationManager.AppSettings["bancoDeDados"];
 
+            connectionString = ConfigurationManager.ConnectionStrings[bancoDeDados].ConnectionString;
+            
+            nomeProvider = ConfigurationManager.ConnectionStrings[bancoDeDados].ProviderName;
+            
+            fabricaProvedor = DbProviderFactories.GetFactory(nomeProvider);
         }
 
         public static int Insert(string sql, Dictionary<string, object> parameters)
         {
-            DbConnection connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
-            DbCommand command = factory.CreateCommand();
-            command.CommandText = sql.AppendSelectLastInsertRowId();
-            command.Connection = connection;
-            command.SetParameters(parameters);
-            connection.Open();
-            int id = Convert.ToInt32(command.ExecuteScalar());
-            connection.Close();
-            return id;
+            using (IDbConnection connection = fabricaProvedor.CreateConnection())
+            {
+                connection.ConnectionString = connectionString;
 
+                using (IDbCommand command = fabricaProvedor.CreateCommand()) 
+                {
+                    command.CommandText = sql.AppendSelectIdentity();
+                    command.Connection = connection;
+                    command.SetParameters(parameters);
+
+                    connection.Open();
+
+                    int id = Convert.ToInt32(command.ExecuteScalar());
+
+                    return id;
+                }
+            }
         }
 
         public static void Update(string sql, Dictionary<string, object> parameters = null)
         {
+            using (IDbConnection connection = fabricaProvedor.CreateConnection())
+            {
+                connection.ConnectionString = connectionString;
 
-            DbConnection connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
-            DbCommand command = factory.CreateCommand();
-            command.CommandText = sql;
-            command.Connection = connection;
-            command.SetParameters(parameters);
-            connection.Open();
-            command.ExecuteNonQuery();
-            connection.Close();
+                using (IDbCommand command = fabricaProvedor.CreateCommand())
+                {
+                    command.CommandText = sql;
+
+                    command.Connection = connection;
+
+                    command.SetParameters(parameters);
+
+                    connection.Open();
+
+                    command.ExecuteNonQuery();             
+                }
+            }
         }
 
         public static void Delete(string sql, Dictionary<string, object> parameters)
@@ -60,92 +78,124 @@ namespace eAgenda.Controladores.Shared
 
         public static List<T> GetAll<T>(string sql, ConverterDelegate<T> convert, Dictionary<string, object> parameters = null)
         {
-            DbConnection connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
-            DbCommand command = factory.CreateCommand();
-            command.CommandText = sql.AppendSelectLastInsertRowId();
-            command.Connection = connection;
-            command.SetParameters(parameters);
-            connection.Open();
-            var list = new List<T>();
-
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+           using (IDbConnection connection = fabricaProvedor.CreateConnection())
             {
-                var obj = convert(reader);
-                list.Add(obj);
+                connection.ConnectionString = connectionString;
+
+                using (IDbCommand command = fabricaProvedor.CreateCommand())
+                {
+                    command.CommandText = sql;
+
+                    command.Connection = connection;
+
+                    command.SetParameters(parameters);
+
+                    connection.Open();
+
+                    var list = new List<T>();
+
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var obj = convert(reader);
+                            list.Add(obj);
+                        }
+
+                        return list;
+                    }
+                }
             }
-            connection.Close();
-            return list;
         }
 
         public static T Get<T>(string sql, ConverterDelegate<T> convert, Dictionary<string, object> parameters)
         {
-            DbConnection connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
-            DbCommand command = factory.CreateCommand();
-            command.CommandText = sql;
-            command.Connection = connection;
-            command.SetParameters(parameters);
-            connection.Open();
-            T t = default;
-            var reader = command.ExecuteReader();
-            if (!reader.HasRows)
-                t = default(T);
-            else
+            using (IDbConnection connection = fabricaProvedor.CreateConnection())
             {
-                reader.Read();
-                t = convert(reader);
+                connection.ConnectionString = connectionString;
+
+                using (IDbCommand command = fabricaProvedor.CreateCommand())
+                {
+                    command.CommandText = sql;
+
+                    command.Connection = connection;
+
+                    command.SetParameters(parameters);
+
+                    connection.Open();
+
+                    T t = default;
+
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+
+                        if (reader.Read())
+                            t = convert(reader);
+
+                        return t;
+                    }
+                }
             }
-            reader.Close();
-            connection.Close();
-            return t;
         }
 
         public static bool Exists(string sql, Dictionary<string, object> parameters)
         {
-            DbConnection connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
-            DbCommand command = factory.CreateCommand();
-            command.CommandText = sql;
-            command.Connection = connection;
-            command.SetParameters(parameters);
-            connection.Open();
+            using (IDbConnection connection = fabricaProvedor.CreateConnection())
+            {
+                connection.ConnectionString = connectionString;
 
-            int numberRows = Convert.ToInt32(command.ExecuteScalar());
+                using (IDbCommand command = fabricaProvedor.CreateCommand())
+                {
+                    command.CommandText = sql;
 
-            connection.Close();
+                    command.Connection = connection;
 
-            return numberRows > 0;
-        }
+                    command.SetParameters(parameters);
 
+                    connection.Open();
 
-        private static void SetParameters(this DbCommand command, Dictionary<string, object> parameters)
+                    int numberRows = Convert.ToInt32(command.ExecuteScalar());
+
+                    return numberRows > 0;
+                }
+            }
+        }        
+
+        private static void SetParameters(this IDbCommand command, Dictionary<string, object> parameters)
         {
             if (parameters == null || parameters.Count == 0)
                 return;
+
             foreach (var parameter in parameters)
             {
                 string name = parameter.Key;
+
                 object value = parameter.Value.IsNullOrEmpty() ? DBNull.Value : parameter.Value;
-                DbParameter dbParameter = factory.CreateParameter();
+
+                IDataParameter dbParameter = command.CreateParameter();
+
                 dbParameter.ParameterName = name;
                 dbParameter.Value = value;
+
                 command.Parameters.Add(dbParameter);
             }
         }
 
-        private static string AppendSelectLastInsertRowId(this string sql)
+        private static string AppendSelectIdentity(this string sql)
         {
-            if (banco == "sqlite")
-                return sql + ";SELECT last_insert_rowid()";
-            else
-                return sql + ";SELECT SCOPE_IDENTITY()";
+            switch (nomeProvider)
+            {
+                case "System.Data.SqlClient": return sql + ";SELECT SCOPE_IDENTITY()";
+
+                case "System.Data.SQLite": return sql + ";SELECT LAST_INSERT_ROWID()";
+
+                default: return sql;
+            }
         }
 
         public static bool IsNullOrEmpty(this object value)
         {
-            return (value is string @string && string.IsNullOrEmpty(@string)) ||
+            return (value is string && string.IsNullOrEmpty((string)value)) ||
                     value == null;
         }
 
